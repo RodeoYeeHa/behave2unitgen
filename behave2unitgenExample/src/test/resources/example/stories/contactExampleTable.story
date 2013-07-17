@@ -1,4 +1,4 @@
-Story: The ContactService must not allow to insert more than 100 contacts into the database.
+Story: The system must be able to filter the list of contacts. 
 
 Scenario: Filter
 
