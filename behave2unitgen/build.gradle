@@ -1,0 +1,109 @@
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	apply plugin: 'maven'
+	
+	task wrapper(type: Wrapper) { gradleVersion = '1.6' }
+	
+	def spring_version = '3.1.1.RELEASE'
+	
+	group = 'org.bom.behave2unitgen'
+
+
+	version = new Version(major: 1, minor: 0, revision: 0, release:false)
+
+		class Version {
+		int major, minor, revision
+		boolean release
+		
+		String toString() {
+			"$major.$minor.$revision${release ? '' : '-SNAPSHOT'}"
+		}
+	}
+
+	task printVersion {
+		doFirst {
+			println "Project version is $version"
+		}
+	}
+			
+	configurations { 
+		ant_behaveOnPUT
+	}
+	
+	repositories {
+		mavenCentral()
+		maven{
+			url 'https://github.com/cseverin/maven-repo/raw/master'
+		}
+	}
+	
+
+	
+	
+	dependencies {
+	
+		compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.+'
+		compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.+'
+		runtime 'org.codehaus.groovy:groovy-all:2.1.+'
+		
+		compile group: 'junit', name: 'junit', version: '4.+'
+		
+		compile "org.springframework:spring-test:${spring_version}"
+		compile group: 'org.springframework', name: 'spring-beans', version: '3.1.2.RELEASE'
+		
+		compile 'org.apache.ant:ant:1.9.1'
+		
+		compile 'com.github.springtestdbunit:spring-test-dbunit:1.0.0'
+		compile 'org.dbunit:dbunit:2.4.8'
+		compile 'org.jbehave:jbehave-core:4.0-beta-3'
+		compile 'org.ow2.asm:asm-all:4.1'
+		compile 'cglib:cglib-nodep:2.2'
+		
+		compile 'com.github.springtestdbunit:spring-test-dbunit:1.0.0'
+		compile 'org.bom.springtestdbunitext:spring-test-dbunit-ext:1.0.0-SNAPSHOT'
+		
+		compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
+		
+		ant_behaveOnPUT 'org.ow2.asm:asm-all:4.1'
+		ant_behaveOnPUT "org.springframework:spring-core:${spring_version}"
+	
+	}
+	
+	/*
+	task compileBehaveOnPUT (dependsOn: sourceSets.test.runtimeClasspath){
+		ant.taskdef(name: 'cBehaveOnPUT',
+			classname: 'org.bom.jbehaveasmunit.ant.BehaveOnPureUnitTestingTask',
+			classpath:   sourceSets.test.runtimeClasspath.asPath){
+			classpath {
+				fileset(dir: 'build/libs', includes: '*.jar')
+			}
+			classpath {
+				configurations.ant_behaveOnPUT.asPath
+			}
+		}
+		ant.cBehaveOnPUT(buildPathTestClasses:"build/classes/test/")
+		
+	}
+	*/
+	
+	test {
+		dependsOn "behave2unitgen"
+	}
+	
+	
+	task(behave2unitgen, dependsOn: 'classes', type: JavaExec) {
+		main = 'org.bom.jbehaveasmunit.runner.Behave2UnitGenRunner'
+		classpath = sourceSets.test.runtimeClasspath
+		args 'parseUnusedStories=true'
+	}
+	
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository(url: 'file://localhost/Users/casi/repository.maven.git/')
+			}
+		}
+	}
+	
+	
+	

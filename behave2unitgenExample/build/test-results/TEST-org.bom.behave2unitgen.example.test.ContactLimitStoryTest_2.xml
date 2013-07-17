@@ -1,0 +1,9 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<testsuite name="org.bom.behave2unitgen.example.test.ContactLimitStoryTest_2" tests="1" failures="0" errors="0" timestamp="1970-01-01T00:00:00" hostname="apples-iMac.local" time="1.374060366167E9">
+  <properties/>
+  <testcase name="insertFail" classname="org.bom.behave2unitgen.example.test.ContactLimitStoryTest_2" time="0.071"/>
+  <system-out><![CDATA[WARN  Behave2UnitGen [AbstractTableMetaData] - Potential problem found: The configured data type factory 'class org.dbunit.dataset.datatype.DefaultDataTypeFactory' might cause problems with the current database 'HSQL Database Engine' (e.g. some datatypes may not be supported properly). In rare cases you might see this message because the list of supported database products is incomplete (list=[derby]). If so please request a java-class update via the forums.If you are using your own IDataTypeFactory extending DefaultDataTypeFactory, ensure that you override getValidDbProducts() to specify the supported database products.
+Hibernate: select count(contact0_.ID) as col_0_0_ from Contact contact0_
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

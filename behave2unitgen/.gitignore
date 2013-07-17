@@ -1,0 +1,7 @@
+/bin
+/build
+/localhost
+/hsqldb.log
+/hsqldb.properties
+/hsqldb.script
+/.gradle
