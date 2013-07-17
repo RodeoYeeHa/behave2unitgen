@@ -5,9 +5,10 @@
 *.war
 *.ear
 
-**/bin
-**/build
-**/localhost
+behave2unitgenExample/bin
+behave2unitgenExample/build
+behave2unitgenExample/localhost
+behave2unitgenExample/.gradle
 **/hsqldb.log
 **/hsqldb.properties
 **/hsqldb.script

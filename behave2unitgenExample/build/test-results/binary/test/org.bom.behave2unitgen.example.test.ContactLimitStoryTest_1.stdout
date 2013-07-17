@@ -1,5 +1,0 @@
-WARN  Behave2UnitGen [AbstractTableMetaData] - Potential problem found: The configured data type factory 'class org.dbunit.dataset.datatype.DefaultDataTypeFactory' might cause problems with the current database 'HSQL Database Engine' (e.g. some datatypes may not be supported properly). In rare cases you might see this message because the list of supported database products is incomplete (list=[derby]). If so please request a java-class update via the forums.If you are using your own IDataTypeFactory extending DefaultDataTypeFactory, ensure that you override getValidDbProducts() to specify the supported database products.
-Hibernate: select count(contact0_.ID) as col_0_0_ from Contact contact0_
-Hibernate: insert into Contact (ID, FIRST_NAME, LAST_NAME, OWNER) values (default, ?, ?, ?)
-Hibernate: select contact0_.ID as ID0_0_, contact0_.FIRST_NAME as FIRST2_0_0_, contact0_.LAST_NAME as LAST3_0_0_, contact0_.OWNER as OWNER0_0_ from Contact contact0_ where contact0_.ID=?
-Hibernate: select count(contact0_.ID) as col_0_0_ from Contact contact0_
