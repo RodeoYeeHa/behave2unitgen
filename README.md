@@ -38,6 +38,26 @@ When you begin to dive in into the world of JBehave, this can be a good starting
   
 Lets begin to drive in into the world of behave :-)
 
+Behavior Driven Development (BDD)
+=================================
+
+I first heard about BDD when I started reading the book "Specification by Example". First I was confused when they used the term "executable specification". How can one execute a specification?
+
+I most projects we have 3 different typs von Tests:
+- Unittests
+- Integration Tests
+- Acceptance Tests
+
+The Unittests and Integrationtests are usually written by the developers themselfes whereas the Acceptance Tests are often executed manually in order to test the specification.
+
+The idea of BDD is the following:
+- Make the specification better to read for the stakeholder/customer by describing the details of a requirement in examples.
+- Make the requirements executable
+
+Once you have implemented the Unittests, you can test your specification any time. In addition to that, when an error occurs, you can simply extend your stories und make the tests run.
+ 
+
+
 
 How to use behave2unitgen
 =========================
