@@ -53,7 +53,7 @@ The requirement we want to test is:
     The system must allow the user to delete any of his contacts. 
     The user is not allowed to delete contacts of other owners. 
 
-This example shows how difficult it is to describe a relatively complex requirement. The following testcase make shure, that e.g. when a Contact with the name 'Severin' exists for multiple owners, the user can only delete his own Contacts: 
+This example shows how difficult it is to describe a relatively simple requirement. The following testcase make shure, that e.g. when a Contact with the name 'Severin' exists for multiple owners, the user can only delete his or her own Contacts: 
 
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(locations = { "classpath:application-context.xml" })
@@ -94,6 +94,38 @@ And i define, how the Data should look like after i deleted 'Severin' for owner 
 
 Very simple so far! Spring-Test-Framework together with DBUnit make it very easy to write an integration test!
 
+If the Testdata is very small or if you want to geneate the Testdata instead of reading it out of an XML-File, you can simply define your Testdata in a static method. Therefore, you have to extend the class level Annotations a bit:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(locations = { "classpath:application-context.xml" })
+    @DbUnitConfiguration(dataSetLoader = TypedDataSetLoader.class)
+    @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+    		DirtiesContextTestExecutionListener.class,
+    		TransactionalTestExecutionListener.class,
+    		DbUnitTestExecutionListener.class })
+    public class ContactDeleteTest { 
+    ...
+
+The @DBUnitConfiguration-Annotation is imporant to notice. Here you define a special Dataset loader, that enables you to reference methods instead of XML-Files. Here is how you use it:
+
+    	@Test
+    	@DatabaseSetup(type=DatabaseOperation.CLEAN_INSERT, value="method:setup")
+    	@ExpectedDatabase(assertionMode=DatabaseAssertionMode.NON_STRICT, value="classpath:dbunit/testdata/contactDeleteCompare.xml")
+    	public void testDeleteDelete(){
+    		service.deleteContactByLastnameAndOwner("Severin",  "umeier");
+    	}
+    	
+    	public static DataSet setup(){
+    		DataSet ds = new DataSet();
+    		ds.row("CONTACT").attr("FIRST_NAME",  "Pina").attr("LAST_NAME",  "Schmidt").attr("OWNER", "umeier");	
+    		ds.row("CONTACT").attr("FIRST_NAME",  "Carsten").attr("LAST_NAME",  "Severin").attr("OWNER", "umeier");	
+    		ds.row("CONTACT").attr("FIRST_NAME",  "Carsten").attr("LAST_NAME",  "Severin").attr("OWNER", "hschmidt");	
+    		return ds;
+    	}
+
+The @DatabaseSetup-Annotation uses a value prefixed with "method:", which means, it should read the Testdata out of the method "setup".
+
+Keep this in mind for we need this information later to feed DBUnit with the Testdata of your BDD-Stories.
 
 
 
