@@ -42,7 +42,6 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
  * @author Carsten Severin
  *
  */
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:application-context.xml" })
 @DbUnitConfiguration(dataSetLoader = TypedDataSetLoader.class)

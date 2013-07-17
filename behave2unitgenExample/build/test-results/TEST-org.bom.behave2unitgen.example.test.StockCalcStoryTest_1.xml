@@ -1,8 +1,8 @@
 <?xml version="1.1" encoding="UTF-8"?>
-<testsuite name="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" tests="3" failures="0" errors="0" timestamp="2013-07-17T13:19:00" hostname="apples-iMac.local" time="0.0020">
+<testsuite name="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" tests="3" failures="0" errors="0" timestamp="2013-07-17T18:44:54" hostname="apples-iMac.local" time="0.0060">
   <properties/>
-  <testcase name="givenIsAStock" classname="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" time="0.0"/>
-  <testcase name="theStockIsTradedAt" classname="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" time="0.0"/>
+  <testcase name="givenIsAStock" classname="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" time="0.0010"/>
+  <testcase name="theStockIsTradedAt" classname="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" time="0.0010"/>
   <testcase name="theAlertStatusShouldBe" classname="org.bom.behave2unitgen.example.test.StockCalcStoryTest_1" time="0.0010"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

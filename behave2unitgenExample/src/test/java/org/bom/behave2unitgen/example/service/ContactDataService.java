@@ -3,8 +3,6 @@ package org.bom.behave2unitgen.example.service;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import org.bom.behave2unitgen.example.beans.Contact;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +22,21 @@ public class ContactDataService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void renameContact(String lastnameOld, String lastnameNew){
-		List<Contact> cList  = sessionFactory.getCurrentSession()
-				.createQuery("from Contact c where c.lastname = :lastname").setParameter("lastname", lastnameOld).list();
-				
-		if (cList.isEmpty())throw new RuntimeException("No such Contact found: " + lastnameOld);
-		
-		for (Iterator<Contact>it = cList.iterator(); it.hasNext();){
+	public void renameContact(String lastnameOld, String lastnameNew) {
+		List<Contact> cList = sessionFactory.getCurrentSession()
+				.createQuery("from Contact c where c.lastname = :lastname")
+				.setParameter("lastname", lastnameOld).list();
+
+		if (cList.isEmpty())
+			throw new RuntimeException("No such Contact found: " + lastnameOld);
+
+		for (Iterator<Contact> it = cList.iterator(); it.hasNext();) {
 			Contact c = it.next();
 			c.setLastname(lastnameNew);
 			sessionFactory.getCurrentSession().saveOrUpdate(c);
 		}
 	}
-	
+
 	public void insertContact(Contact c) throws TooManyContactsException {
 		if (countContact() < 100) {
 			sessionFactory.getCurrentSession().save(c);
@@ -52,14 +52,23 @@ public class ContactDataService {
 				.uniqueResult()).intValue();
 	}
 
+	public void deleteContactByLastnameAndOwner(String lastname, String owner) {
+		sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"delete Contact c where lastname = :lastname and owner=:owner")
+				.setParameter("lastname", lastname)
+				.setParameter("owner", owner).executeUpdate();
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<Contact> findContacts(String searchQuery) {
 		return (List<Contact>) sessionFactory
 				.getCurrentSession()
 				.createQuery(
 						"from Contact c where c.firstname like :firstnameQuery")
-				.setParameter("firstnameQuery", searchQuery.replaceAll("\\*", "%"))
-				.list();
+				.setParameter("firstnameQuery",
+						searchQuery.replaceAll("\\*", "%")).list();
 
 	}
 

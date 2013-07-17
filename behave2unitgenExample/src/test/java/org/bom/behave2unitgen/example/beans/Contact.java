@@ -22,6 +22,9 @@ public class Contact{
 	@Column(name = "LAST_NAME")
 	String lastname;
 
+	@Column(name = "OWNER")
+	String owner;
+	
 	public Contact(){
 		
 	}
@@ -53,6 +56,14 @@ public class Contact{
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 	
 	
