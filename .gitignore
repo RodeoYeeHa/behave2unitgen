@@ -4,3 +4,11 @@
 *.jar
 *.war
 *.ear
+
+**/bin
+**/build
+**/localhost
+**/hsqldb.log
+**/hsqldb.properties
+**/hsqldb.script
+**/.gradle
