@@ -14,7 +14,8 @@ https://github.com/springtestdbunit/spring-test-dbunit
 
 When you want to inject Testdata from the Stories via JSON, you also need the Jackson-Library.
 
-== Introduction
+Introduction
+============
 Why generating Unittests out of Behave-Stories instead of using JBehave directly? 
 
 JBehave come with an excellent JUnit-Integration. You can extend your Testcases from JUnitStories or from JUnitStory. The testclass then is a bridge between your stories an the Step-Class.
