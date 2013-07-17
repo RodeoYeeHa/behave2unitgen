@@ -37,7 +37,13 @@ When you begin to dive in into the world of JBehave, this can be a good starting
 Lets begin to drive in into the world of behave :-)
 
 
+How to use behave2unitgen
+=========================
 
+Example 1: TODO
+===============
+
+...
  
 
 
