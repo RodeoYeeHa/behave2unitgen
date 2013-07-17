@@ -128,10 +128,167 @@ The @DatabaseSetup-Annotation uses a value prefixed with "method:", which means,
 Keep this in mind for we need this information later to feed DBUnit with the Testdata of your BDD-Stories.
 
 
+Write a Story (Example 1: Delete a Contact)
+===========================================
 
+Now we remember the requirement from before:
 
-Example 1: TODO
-===============
+    The system must allow the user to delete any of his contacts.
+    The user is not allowed to delete contacts of other owners.
+
+This kind of requirement is extremely hard to read for stakeholders/customers. It is also not very precise thus hard to implement for the programmer.
+
+An example would help the stakeholder to understand the requirement better. The example can be used by the programmer to test the implementation. BDD helps us with that.
+
+In our project, we store the following Story in a file named "contactDelete.story":
+
+    Story: 
+    The system must allow the user to delete any of his contacts.
+    The user is not allowed to delete contacts of other owners.
+
+    Scenario: 
+    "Delete by Lastname" only deletes contacts of the current user itself
+
+    Given the Contacts: 
+    |lastname|firstname|owner|
+    |Severin|Carsten|umeier|
+    |Schmidt|Pina|umeier|
+    |Severin|Carsten|hschmidt|
+
+    When Contact with Lastname Severin is deleted by Owner umeier
+
+    Then the Contacts are:
+    |lastname|firstname|owner|
+    |Schmidt|Pina|umeier|
+    |Severin|Carsten|hschmidt|
+
+After you get used to the syntax you will find it very easy to write a story yourself. Pay attention to the Testdata: it is already included in the story and you will see, that JBehave will provide you that data in your Unit-Test!
+
+Next, we will write a simple Unit-Tests for this Story:
+
+    @RunWith(SpringJUnit4ClassRunner.class)
+    @ContextConfiguration(locations = { "classpath:application-context.xml" })
+    @DbUnitConfiguration(dataSetLoader = TypedDataSetLoader.class)
+    @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+    		DirtiesContextTestExecutionListener.class,
+    		TransactionalTestExecutionListener.class,
+    		DbUnitTestExecutionListener.class })
+    @Story(name="/example/stories/contactDelete.story")
+    @FixMethodOrder(MethodSorters.JVM)
+    public class ContactDeleteStoryTest {
+    
+    	@Autowired
+    	private ContactDataService service;
+    		
+    }
+
+This Unit-test will fail for there is no Testmethod in it so far. As you can see, i extended the Class-level Annotations with "@Story". I use this annotation to reference the story i want to write a Unittest for.
+
+Another thing you might have noticed is the @FixMethodOrder-Annotation. Usually, all Unit-Tests should be independant of each another, so the order in with the methods are called are not predictable in JUnit 4 by default.
+
+Our Scenario constists of tree steps: "Given" (the pre-condition), "When" (the condition) and "Then". It can be very useful to split these three steps into separate test-methods. If we do this, we need to make shure, that the methods are called in the right order (e.g. "Given" before or with "When").
+
+Normally, it is not a good idea to make test-method dependant of each another. In this case, it helps us to implement the three steps separately within the Unit-Test. Therefore, we use the @FixMethodOrder-Annotation.
+
+Now we implement the first test-method:
+
+    	@Test
+    	@Given(value="Given the Contacts:$contactsBefore")
+     	public void givenThreeContacts(){
+    		// Nothing to do here
+    	}
+    	
+    	@StoryParameter(name="contactsBefore")
+    	public static ExamplesTable getContactsBefore(){
+    		// return null because method will be implemented by behave2unitgen
+    		return null;
+    	}
+
+With these two methods, we map the "@Given"-Step of our story to the Unit-Test. We tell JBehave to store the Datatable of the Story into the parameter called "contactBefore". 
+
+In JBehave, the Parameter would be directly passed into the test-method as a parameter. Because we cannot do this here (it is still a pure JUnit-Test), we create a method-body and annotate the method with the @StoryParameter-Annotation. This method will be implemented by behave2unitgen later, so we only habe to pass null als return value.
+
+Now we extend this a bit to use DBUnit to store the data for us:
+
+    	@Test
+    	@Given(value = "Given the Contacts:$contactsBefore")
+    	@DatabaseSetup(type=DatabaseOperation.CLEAN_INSERT, value="method:getInitData")
+    	public void givenThreeContacts() {
+    		// Nothing to do here
+    	}
+    
+    	public static HashMap<String, String> createColumnMapper() {
+    		return new ColumnMapper().addColumn("firstname", "FIRST_NAME")
+     				.addColumn("lastname", "LAST_NAME").addColumn("owner", "OWNER")
+    				.getColumns();
+    	}
+    
+    	public static DataSet getInitData() {
+    		return ExampleTable2DataSetUtil.createDataSet(getContactsBefore(),
+    				"CONTACT", createColumnMapper());
+    	}
+    
+    	@StoryParameter(name = "contactsBefore")
+    	public static ExamplesTable getContactsBefore() {
+    		// return null because method will be implemented by behave2unitgen
+    		return null;
+    	}
+
+Now, we use DBUnit to read the Testdata out of the method "getInitData". This method reads the test data out of "getContactsBefore", which returns the testdata of the story.
+
+Thats it! Step one is ready. After implementing "@Given", we should implement the next step "@When":
+
+    	@Test
+    	@When(value = "When Contact with Lastname $lastname is deleted by Owner $owner")
+    	public void whenAContactIsDeleted() {
+    		service.deleteContactByLastnameAndOwner(getLastname(), getOwner());
+    	}
+    
+        @StoryParameter(name="lastname")
+    	public String getLastname() {
+    		// return null because method will be implemented by behave2unitgen
+    		return null;
+    	}
+    
+        @StoryParameter(name="owner")
+    	public String getOwner() {
+    		// return null because method will be implemented by behave2unitgen
+    		return null;
+    	}
+ 
+Again, the parameter "owner" and "lastname" will be read out of the story. behave2unitgen will provide the data over the methods "getOwner" and "getLastname".  
+
+The method "whenAContactIsDeleted" is Annotated with @Test and contains the code to delete a Contact.
+
+The last step is to implement @Then:
+
+    	@Test
+    	@Then(value = "Then the Contacts are:$contactsAfter")
+    	@ExpectedDatabase(assertionMode=DatabaseAssertionMode.NON_STRICT, value="method:getResultData")
+    	public void thenTwoContacts() {
+    		// Nothing to do here
+    	}
+    	
+    	@StoryParameter(name = "contactsAfter")
+    	public static ExamplesTable getContactsAfter() {
+    		// return null because method will be implemented by behave2unitgen
+    		return null;
+    	}
+    	
+    	public static DataSet getResultData() {
+    		return ExampleTable2DataSetUtil.createDataSet(getContactsAfter(),
+    				"CONTACT", createColumnMapper());
+    	} 
+
+Again, we use the method "getContactsAfter" to get the ExampleTable of the @Then-step out of the story. With the method "getResultData" we feed DBUnit with this data and DBUnit compares the result data with the supposed data itself.
+
+That's it! Now, all three steps are implemented: @Given, @When and @Then.
+
+What we habe learned:
+- JBehave helps to separate Testdata and Unittest-implementation: the tests are implemented in a pure JUnit-Test whereas the Testdata is provided by the story.
+- Together with DBUnit, there are only very few things to implement
+- When you have a Story file in your Project and no implementation, behave2unitgen will generate an Assert failure for this. Thus, you can always be informed about the state of your project.
+
 
 ...
  
