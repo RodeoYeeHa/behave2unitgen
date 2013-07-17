@@ -50,9 +50,10 @@ There is a library called "spring-test-dbunit" that integrates the Spring Test F
 
 The requirement we want to test is: 
 
-    The system must allow the user to delete any of his contacts. The user is not allowed to delete contacts of other owners. 
+    The system must allow the user to delete any of his contacts. 
+    The user is not allowed to delete contacts of other owners. 
 
-This example show how difficult it is to describe a relatively complex requirement. The following testcase make shure, that e.g. when a Contact with the name 'Severin' exists for multiple owners, the user can only delete his own Contacts: 
+This example shows how difficult it is to describe a relatively complex requirement. The following testcase make shure, that e.g. when a Contact with the name 'Severin' exists for multiple owners, the user can only delete his own Contacts: 
 
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(locations = { "classpath:application-context.xml" })
