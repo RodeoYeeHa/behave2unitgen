@@ -1,6 +1,8 @@
 behave2unitgen
 ==============
 
+ATTENTION!!! THIS DESCRIPTION IS STILL IN PROGRESS!!!
+
 Behave2UnitGen generated executable JUnit-Testcases from a set of given Story-files. It uses ASM to generate the Testcases.
 
 The project depends on JBehave:
@@ -206,7 +208,7 @@ Now we implement the first test-method:
 
 With these two methods, we map the "@Given"-Step of our story to the Unit-Test. We tell JBehave to store the Datatable of the Story into the parameter called "contactBefore". 
 
-In JBehave, the Parameter would be directly passed into the test-method as a parameter. Because we cannot do this here (it is still a pure JUnit-Test), we create a method-body and annotate the method with the @StoryParameter-Annotation. This method will be implemented by behave2unitgen later, so we only habe to pass null als return value.
+In JBehave, the Parameter would be directly passed into the test-method as a parameter. Because we cannot do this here (it is still a pure JUnit-Test), we create a method-body and annotate the method with the @StoryParameter-Annotation. This method will be implemented by behave2unitgen later, so we only have to pass null als return value.
 
 Now we extend this a bit to use DBUnit to store the data for us:
 
