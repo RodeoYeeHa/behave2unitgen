@@ -101,16 +101,19 @@ public class ContactJSONStoryTest {
 	
 	@StoryParameter(name = "allContacts")
 	public static JSONList<ContactTestBean> getAllContacts() {
+		// behave2unitgen will implement that for you
 		return null;
 	}
 
 	@StoryParameter(name = "selectedContacts")
 	public static JSONList<ContactTestBean> getSelectedContacts() {
+		// behave2unitgen will implement that for you
 		return null;
 	}
 
 	@StoryParameter(name = "filter")
 	public static String getFilter() {
+		// behave2unitgen will implement that for you
 		return null;
 	}
 	

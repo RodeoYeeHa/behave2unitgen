@@ -94,16 +94,19 @@ public class ContactExampleTableStoryTest {
 	
 	@StoryParameter(name = "allContacts")
 	public static ExamplesTable getAllContacts() {
+		// behave2unitgen will implement that for you
 		return null;
 	}
 
 	@StoryParameter(name = "selectedContacts")
 	public static ExamplesTable getSelectedContacts() {
+		// behave2unitgen will implement that for you
 		return null;
 	}
 
 	@StoryParameter(name = "filter")
 	public static String getFilter() {
+		// behave2unitgen will implement that for you
 		return null;
 	}
 	

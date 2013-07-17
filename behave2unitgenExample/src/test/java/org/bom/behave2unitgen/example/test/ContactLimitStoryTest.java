@@ -87,6 +87,7 @@ public class ContactLimitStoryTest {
 	
 	@StoryParameter(name="maximum")
 	public static int getMaximum(){
+		// behave2unitgen will implement that for you
 		return -1;
 	}
 	

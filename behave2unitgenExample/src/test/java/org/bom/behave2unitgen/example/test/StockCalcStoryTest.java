@@ -39,21 +39,25 @@ public class StockCalcStoryTest {
 
 	@StoryParameter(name="symbol")
 	public String getStockName(){
+		// behave2unitgen will implement that for you
 		return "";
 	}
 	
 	@StoryParameter(name="threshold")
 	public double getThreshold(){
+		// behave2unitgen will implement that for you
 		return -1;
 	}
 	
 	@StoryParameter(name="price")
 	public double getTradedValue(){
+		// behave2unitgen will implement that for you
 		return -1;
 	}
 
 	@StoryParameter(name="status")
 	public boolean getStatus(){
+		// behave2unitgen will implement that for you
 		return true;
 	}
 	
