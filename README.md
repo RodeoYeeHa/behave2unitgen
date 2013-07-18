@@ -267,6 +267,18 @@ Now we extend this a bit to use DBUnit to store the data for us:
 
 Now, we use DBUnit to read the Testdata out of the method "getInitData". This method reads the test data out of "getContactsBefore", which returns the testdata of the story.
 
+Lets start the test with gradle:
+
+    gradle --daemon test
+
+The test succeeds as we can see in the JUnit Reports:
+
+![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse1.jpg)
+
+Have a look at the class names: behave2unitgen generated a new class named "ContactDeleteStoryTest_1.class". You can also see this when you watch the class files in the build folder:
+
+![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_gen1.jpg)
+
 Implementing the @When
 ----------------------
 
@@ -294,6 +306,14 @@ Again, the parameter "owner" and "lastname" will be read out of the story. behav
 
 The method "whenAContactIsDeleted" is Annotated with @Test and contains the code to delete a Contact.
 
+Lets start the test again:
+
+    gradle --daemon test
+
+The test succeeds as well. Again, we have a look at the JUnit-Reports:
+
+![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse2.jpg)
+
 Implementing the @Then
 ----------------------
 
@@ -320,6 +340,14 @@ The last step is to implement @Then:
 Again, we use the method "getContactsAfter" to get the ExampleTable of the @Then-step out of the story. With the method "getResultData" we feed DBUnit with this data and DBUnit compares the result data with the supposed data itself.
 
 That's it! Now, all three steps are implemented: @Given, @When and @Then.
+
+When we start the test again, we see in the JUnit-Reports that all three tests succeed:
+
+    gradle --daemon test
+
+Here is the JUnit-Report:
+
+![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse3.jpg)
 
 Use JSON as data format
 -----------------------
