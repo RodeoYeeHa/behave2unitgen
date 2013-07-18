@@ -43,7 +43,7 @@ Behavior Driven Development (BDD)
 
 I first heard about BDD when I started reading the book "Specification by Example". I was confused at first when they used the term "executable specification". How can one execute a specification?
 
-In most projects i have seen, there are 3 different typs of tests used:
+In most projects i have seen, there are 3 different types of tests:
 - Unit Tests
 - Integration Tests
 - Acceptance Tests
