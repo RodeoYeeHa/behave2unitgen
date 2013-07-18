@@ -76,6 +76,8 @@ Then you have to include the dependencies:
     compile "org.springframework:spring-test:3.1.2.RELEASE"
     compile "org.springframework:spring-beans:3.1.2.RELEASE"
     
+    compile 'org.jbehave:jbehave-core:4.0-beta-3'
+
     testCompile "org.ow2.asm:asm-all:4.1"
 
     compile ("org.bom.behave2unitgen:behave2unitgen:1.0.0-SNAPSHOT"){
