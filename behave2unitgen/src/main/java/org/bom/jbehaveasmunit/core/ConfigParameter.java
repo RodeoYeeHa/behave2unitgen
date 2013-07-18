@@ -49,6 +49,9 @@ public class ConfigParameter {
 		this.failOnParameterIsNull = failOnParameterIsNull;
 	}
 
+	public void abc(){
+		throw new RuntimeException("ABC");
+	}
 	
 	
 }

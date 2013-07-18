@@ -6,8 +6,8 @@ import java.util.Iterator;
 
 import org.bom.jbehaveasmunit.util.AnnotationConstants;
 import org.bom.jbehaveasmunit.util.AnnotationParameterParserUtil;
-import org.bom.jbehaveasmunit.util.AnnotationValueUtil;
 import org.bom.jbehaveasmunit.util.AnnotationParameterParserUtil.AnnotationParserResult;
+import org.bom.jbehaveasmunit.util.AnnotationValueUtil;
 import org.jbehave.core.steps.StepType;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -120,15 +120,20 @@ public class StoryParameterProcessor {
 										+ valueKey
 										+ "') is null so the value is not available in the test");
 
-								if (configBean.getFailOnParameterIsNull()) {
+								it.remove();
 
-									failures.add(new AssertFailTemp(
-											"storyParameterIsNull",
-											"@StoryParameter cannot be found: "
-													+ valueKey
-													+ ", values are: "
-													+ parameter.toString()));
-								}
+								toBeInserted
+										.add(new InsertParamMethod(
+												methodNode.name,
+												methodNode.desc,
+												methodNode.signature,
+												"Parameter "
+														+ valueKey
+														+ " is null, allowed values are: "
+														+ parameter,
+												methodNode.access == Opcodes.ACC_PUBLIC
+														+ Opcodes.ACC_STATIC,
+												true));
 
 							} else {
 
@@ -139,12 +144,11 @@ public class StoryParameterProcessor {
 										+ methodNode.name
 										+ " is deleted in order to be replaced!");
 
-								
 								toBeInserted.add(new InsertParamMethod(
 										methodNode.name, methodNode.desc,
 										methodNode.signature, value,
 										methodNode.access == Opcodes.ACC_PUBLIC
-												+ Opcodes.ACC_STATIC));
+												+ Opcodes.ACC_STATIC, false));
 							}
 						}
 					}
@@ -175,8 +179,19 @@ public class StoryParameterProcessor {
 			} else {
 
 				try {
-					generator.insertMethod(classNode, insert.methodName, insert.signature,
-							insert.value, insert.publicStatic);
+
+					if (insert.exeption) {
+
+						generator.insertMethod(classNode, insert.methodName,
+								insert.signature, insert.value,
+								insert.publicStatic);
+
+					} else {
+
+						generator.insertMethod(classNode, insert.methodName,
+								insert.signature, insert.value,
+								insert.publicStatic);
+					}
 				} catch (Exception e) {
 					failureWriter.insertFailureMethod(classNode,
 							"storyParameterCannotBeSet",
@@ -208,31 +223,63 @@ public class StoryParameterProcessor {
 
 		String value;
 
+		boolean exeption;
+
 		boolean publicStatic;
 
 		InsertParamMethod(String methodName, String returnType,
-				String signature, String value, boolean publicStatic) {
+				String signature, String value, boolean publicStatic,
+				boolean exception) {
 
 			this.methodName = methodName;
 			this.returnType = returnType;
 			this.publicStatic = publicStatic;
 			this.value = value;
 			this.signature = signature;
+			this.exeption = exception;
 
 		}
 
 	}
 
-	interface ParameterMethodGenerator {
+	abstract class ParameterMethodGenerator {
 
-		public void register(HashMap<String, ParameterMethodGenerator> list);
+		public abstract void register(
+				HashMap<String, ParameterMethodGenerator> list);
 
-		public void insertMethod(ClassNode classNode, String method,
+		public abstract void insertMethod(ClassNode classNode, String method,
 				String signature, String value, boolean publicStatic);
 
+		public void insertMethodWithException(ClassNode classNode,
+				String method, String signature, String message,
+				boolean publicStatic) {
+
+			MethodVisitor mv = classNode.visitMethod(Opcodes.ACC_PUBLIC
+					+ (publicStatic ? Opcodes.ACC_STATIC : 0), method,
+					"()Ljava/lang/Integer;", signature, null);
+
+			mv.visitCode();
+			Label l0 = new Label();
+			mv.visitLabel(l0);
+			mv.visitLineNumber(53, l0);
+			mv.visitTypeInsn(Opcodes.NEW, "java/lang/RuntimeException");
+			mv.visitInsn(Opcodes.DUP);
+			mv.visitLdcInsn(message);
+			mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+					"java/lang/RuntimeException", "<init>",
+					"(Ljava/lang/String;)V");
+			mv.visitInsn(Opcodes.ATHROW);
+			Label l1 = new Label();
+			mv.visitLabel(l1);
+			mv.visitLocalVariable("this", "L" + classNode + ";", null, l0, l1,
+					0);
+			mv.visitMaxs(3, 1);
+			mv.visitEnd();
+
+		}
 	}
 
-	class IntegerParameterGenerator implements ParameterMethodGenerator {
+	class IntegerParameterGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -266,7 +313,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class DoubleParameterGenerator implements ParameterMethodGenerator {
+	class DoubleParameterGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -300,7 +347,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class IntegerTypeMethodGenerator implements ParameterMethodGenerator {
+	class IntegerTypeMethodGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -340,7 +387,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class DoubleTypeMethodGenerator implements ParameterMethodGenerator {
+	class DoubleTypeMethodGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -378,7 +425,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class BooleanParameterGenerator implements ParameterMethodGenerator {
+	class BooleanParameterGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -416,7 +463,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class BooleanTypeMethodGenerator implements ParameterMethodGenerator {
+	class BooleanTypeMethodGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -452,7 +499,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class StringMethodGenerator implements ParameterMethodGenerator {
+	class StringMethodGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -486,7 +533,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class ExampleTableMethodGenerator implements ParameterMethodGenerator {
+	class ExampleTableMethodGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -523,7 +570,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class JSONMethodListGenerator implements ParameterMethodGenerator {
+	class JSONMethodListGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -576,12 +623,8 @@ public class StoryParameterProcessor {
 			mv.visitInsn(Opcodes.ARETURN);
 			mv.visitLabel(l2);
 			mv.visitLineNumber(154, l2);
-			mv.visitFrame(
-					Opcodes.F_FULL,
-					2,
-					new Object[] {
-							classNode.name,
-							"org/codehaus/jackson/map/ObjectMapper" }, 1,
+			mv.visitFrame(Opcodes.F_FULL, 2, new Object[] { classNode.name,
+					"org/codehaus/jackson/map/ObjectMapper" }, 1,
 					new Object[] { "java/lang/Exception" });
 			mv.visitVarInsn(Opcodes.ASTORE, 2);
 			Label l4 = new Label();
@@ -607,9 +650,8 @@ public class StoryParameterProcessor {
 		}
 
 	}
-	
-	
-	class JSONMethodGenerator implements ParameterMethodGenerator {
+
+	class JSONMethodGenerator extends ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -620,8 +662,11 @@ public class StoryParameterProcessor {
 		@Override
 		public void insertMethod(ClassNode classNode, String method,
 				String signature, String value, boolean publicStatus) {
-			
-			MethodVisitor mv = classNode.visitMethod(Opcodes.ACC_PUBLIC+ (publicStatus ? Opcodes.ACC_STATIC : 0), method, "()Lorg/bom/jbehaveasmunit/beans/JSONObject;", signature, null);
+
+			MethodVisitor mv = classNode.visitMethod(Opcodes.ACC_PUBLIC
+					+ (publicStatus ? Opcodes.ACC_STATIC : 0), method,
+					"()Lorg/bom/jbehaveasmunit/beans/JSONObject;", signature,
+					null);
 			mv.visitCode();
 			Label l0 = new Label();
 			Label l1 = new Label();
@@ -630,33 +675,42 @@ public class StoryParameterProcessor {
 			Label l3 = new Label();
 			mv.visitLabel(l3);
 			mv.visitLineNumber(19, l3);
-			mv.visitTypeInsn(Opcodes.NEW, "org/codehaus/jackson/map/ObjectMapper");
+			mv.visitTypeInsn(Opcodes.NEW,
+					"org/codehaus/jackson/map/ObjectMapper");
 			mv.visitInsn(Opcodes.DUP);
-			mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/codehaus/jackson/map/ObjectMapper", "<init>", "()V");
+			mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+					"org/codehaus/jackson/map/ObjectMapper", "<init>", "()V");
 			mv.visitVarInsn(Opcodes.ASTORE, 1);
 			mv.visitLabel(l0);
 			mv.visitLineNumber(21, l0);
-			mv.visitTypeInsn(Opcodes.NEW, "org/bom/jbehaveasmunit/beans/JSONObject");
+			mv.visitTypeInsn(Opcodes.NEW,
+					"org/bom/jbehaveasmunit/beans/JSONObject");
 			mv.visitInsn(Opcodes.DUP);
 			mv.visitVarInsn(Opcodes.ALOAD, 1);
 			mv.visitLdcInsn(value);
-			
+
 			signature = signature.replaceAll(
 					"\\(\\)Lorg/bom/jbehaveasmunit/beans/JSONObject\\<", "");
 			signature = signature.replaceAll("\\>\\;", "");
-			
+
 			mv.visitLdcInsn(Type.getType(signature));
-			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/codehaus/jackson/map/ObjectMapper", "readValue", "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;");
-			
-			//mv.visitTypeInsn(Opcodes.CHECKCAST, "org/bom/jbehaveasmunit/test/ContactTestBean");
-			mv.visitTypeInsn(Opcodes.CHECKCAST, signature)
-			;
-			mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/bom/jbehaveasmunit/beans/JSONObject", "<init>", "(Ljava/lang/Object;)V");
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
+					"org/codehaus/jackson/map/ObjectMapper", "readValue",
+					"(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;");
+
+			// mv.visitTypeInsn(Opcodes.CHECKCAST,
+			// "org/bom/jbehaveasmunit/test/ContactTestBean");
+			mv.visitTypeInsn(Opcodes.CHECKCAST, signature);
+			mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+					"org/bom/jbehaveasmunit/beans/JSONObject", "<init>",
+					"(Ljava/lang/Object;)V");
 			mv.visitLabel(l1);
 			mv.visitInsn(Opcodes.ARETURN);
 			mv.visitLabel(l2);
 			mv.visitLineNumber(22, l2);
-			mv.visitFrame(Opcodes.F_FULL, 2, new Object[] {classNode.name, "org/codehaus/jackson/map/ObjectMapper"}, 1, new Object[] {"java/lang/Exception"});
+			mv.visitFrame(Opcodes.F_FULL, 2, new Object[] { classNode.name,
+					"org/codehaus/jackson/map/ObjectMapper" }, 1,
+					new Object[] { "java/lang/Exception" });
 			mv.visitVarInsn(Opcodes.ASTORE, 2);
 			Label l4 = new Label();
 			mv.visitLabel(l4);
@@ -664,19 +718,22 @@ public class StoryParameterProcessor {
 			mv.visitTypeInsn(Opcodes.NEW, "java/lang/RuntimeException");
 			mv.visitInsn(Opcodes.DUP);
 			mv.visitVarInsn(Opcodes.ALOAD, 2);
-			mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/RuntimeException", "<init>", "(Ljava/lang/Throwable;)V");
+			mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+					"java/lang/RuntimeException", "<init>",
+					"(Ljava/lang/Throwable;)V");
 			mv.visitInsn(Opcodes.ATHROW);
 			Label l5 = new Label();
 			mv.visitLabel(l5);
 			mv.visitLocalVariable("this", "L" + classNode.name + ";", null, l0,
 					l1, 0);
-			mv.visitLocalVariable("om", "Lorg/codehaus/jackson/map/ObjectMapper;", null, l0, l5, 1);
+			mv.visitLocalVariable("om",
+					"Lorg/codehaus/jackson/map/ObjectMapper;", null, l0, l5, 1);
 			mv.visitLocalVariable("e", "Ljava/lang/Exception;", null, l4, l5, 2);
 			mv.visitMaxs(5, 3);
 			mv.visitEnd();
 		}
 
-	}	
+	}
 
 	class AssertFailTemp {
 
