@@ -19,9 +19,9 @@ When you want to inject Testdata from the Stories via JSON, you also need the Ja
 Introduction
 ============
 
-JBevave is exellent for interating Behavior Driven Development into your projects. With the standard implementation, i had the following problems:
-- i could not use Spring Test Framework and DBUnit the way i wanted to. E.g. i had to use special Annotations for the Spring integration
-- For simple one-story-per-Unit Test, i don't need to separate the Steps into a separate class
+JBevave is exellent for interating Behavior Driven Development into your projects. With the standard implementation, I had the following "problems":
+- I was not able to use Spring Test Framework and DBUnit the way I wanted to. E.g. I had to use special Annotations for the Spring integration
+- For a simple one-story-per-Testcase, I don't need to separate the Steps into their own class
 
 Behavior Driven Development (BDD)
 =================================
