@@ -70,7 +70,7 @@ DBUnit is extremely useful for integration tests for it provides you some featur
 
 There is a library called "spring-test-dbunit" that integrates the Spring Test Framework will DBUnit. 
 
-The requirement we want to test is: 
+Lets assume, we want to implement an adressbook application. The requirement we want to test is: 
 
     The system must allow the user to delete any of his contacts. 
     The user is not allowed to delete contacts of other owners. 
@@ -150,8 +150,10 @@ The @DatabaseSetup-Annotation uses a value prefixed with "method:", which means,
 Keep this in mind for we need this information later to feed DBUnit with the Testdata of your BDD-Stories.
 
 
-Usecase "Delete a Contact" from an addressbook
-=========================================================
+Usecase "Delete a Contact"
+==========================
+
+"The Adressbook-App should allow the use to delete one of his stored Contacts"
 
 Writing the Story
 -----------------
