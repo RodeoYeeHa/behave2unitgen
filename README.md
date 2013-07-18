@@ -62,13 +62,52 @@ Once you have implemented the Unit Tests for your requirements, you can test the
 How to use behave2unitgen
 =========================
 
-TODO
+The sample project uses gradle as the prefered build system. To be able to download behave2unitgen, you must extend your maven repositories:
+
+    	repositories {
+    		mavenCentral()
+    		maven{
+    			url 'https://github.com/cseverin/maven-repo/raw/master'
+    		}
+    	}
+
+Then you have to include the dependencies:
+
+    testCompile 'org.ow2.asm:asm-all:4.1'
+    		compile ('org.bom.behave2unitgen:behave2unitgen:1.0.0-SNAPSHOT'){
+    			changing = true
+    		}
+You might need further dependencies. Please have a look at the complete gradle-script of the examples-project:
+
+https://raw.github.com/cseverin/behave2unitgen/master/behave2unitgenExample/build.gradle
+
+When you have not installed gradle, you can use the gradle-wrapper simply by calling 
+
+    gradlew --daemon test
+
+instead of
+
+    gradle --daemon test
+
+In order to run the generation automatically before the test-task, you have to add the following to your gradle-script as well:
+
+    	test {
+    		dependsOn "behave2unitgen"
+    	}
+    	
+    	
+    	task(behave2unitgen, dependsOn: 'classes', type: JavaExec) {
+    		main = 'org.bom.jbehaveasmunit.runner.Behave2UnitGenRunner'
+    		classpath = sourceSets.test.runtimeClasspath
+    		args 'parseUnusedStories=true'
+    	}
+	
 
 Use DBUnit
 ==========
 Most of our web applications rely on database queries that can only be testet completely with Integration Tests. 
 
-DBUnit is extremely useful for Integration Tests for it provides you some features to prepare the database before your tests start and even to compare the data after the test run with the expected values automatically.
+DBUnit is extremely useful for Integration Tests for it provides you some features to prepare the database before your tests start and even to compare the data after the test have run with the expected values automatically.
 
 There is a library called "spring-test-dbunit" that integrates the Spring Test Framework will DBUnit. 
 
