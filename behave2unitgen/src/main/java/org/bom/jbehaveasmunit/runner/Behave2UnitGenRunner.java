@@ -66,7 +66,6 @@ public class Behave2UnitGenRunner {
 		private static final String SEARCH_PATTERN_TEST_CLASSES = "searchPatternTestClasses";
 		private static final String BUILD_PATH_TEST = "outDir";
 		private static final String PARSE_UNUSED_STORIES = "parseUnusedStories";
-		private static final String FAIL_ON_PARAMETER_IS_NULL = "failOnParameterIsNull";
 
 		public void parseParameter(String s[]) {
 			if (s != null) {
@@ -82,15 +81,12 @@ public class Behave2UnitGenRunner {
 							this.setOutDir(value);
 						} else if (PARSE_UNUSED_STORIES.equals(key)) {
 							this.setParseUnusedStories("true".equals(value));
-						} else if (FAIL_ON_PARAMETER_IS_NULL.equals(key)) {
-							this.setFailOnParameterIsNull("true".equals(value));
 						} else {
 							throw new RuntimeException("Unknown parameter: "
 									+ key + ", allowed: "
 									+ SEARCH_PATTERN_TEST_CLASSES + ";"
 									+ BUILD_PATH_TEST + ";"
-									+ PARSE_UNUSED_STORIES + ";"
-									+ FAIL_ON_PARAMETER_IS_NULL);
+									+ PARSE_UNUSED_STORIES);
 						}
 
 					} else {

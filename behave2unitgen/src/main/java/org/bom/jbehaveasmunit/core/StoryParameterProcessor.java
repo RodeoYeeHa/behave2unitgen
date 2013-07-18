@@ -182,8 +182,8 @@ public class StoryParameterProcessor {
 
 					if (insert.exeption) {
 
-						generator.insertMethod(classNode, insert.methodName,
-								insert.signature, insert.value,
+						insertExceptionWhenNull(classNode, insert.methodName,
+								insert.returnType, insert.signature, insert.value,
 								insert.publicStatic);
 
 					} else {
@@ -241,8 +241,37 @@ public class StoryParameterProcessor {
 		}
 
 	}
+	
+	
+	public void insertExceptionWhenNull(ClassNode classNode,
+			String method, String desc, String signature, String message,
+			boolean publicStatic) {
 
-	abstract class ParameterMethodGenerator {
+		MethodVisitor mv = classNode.visitMethod(Opcodes.ACC_PUBLIC
+				+ (publicStatic ? Opcodes.ACC_STATIC : 0), method, 
+				desc, signature, null);
+
+		mv.visitCode();
+		Label l0 = new Label();
+		mv.visitLabel(l0);
+		mv.visitLineNumber(53, l0);
+		mv.visitTypeInsn(Opcodes.NEW, "java/lang/RuntimeException");
+		mv.visitInsn(Opcodes.DUP);
+		mv.visitLdcInsn(message);
+		mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+				"java/lang/RuntimeException", "<init>",
+				"(Ljava/lang/String;)V");
+		mv.visitInsn(Opcodes.ATHROW);
+		Label l1 = new Label();
+		mv.visitLabel(l1);
+		mv.visitLocalVariable("this", "L" + classNode.name + ";", null, l0, l1,
+				0);
+		mv.visitMaxs(3, 1);
+		mv.visitEnd();
+
+	}	
+
+	interface ParameterMethodGenerator {
 
 		public abstract void register(
 				HashMap<String, ParameterMethodGenerator> list);
@@ -250,36 +279,10 @@ public class StoryParameterProcessor {
 		public abstract void insertMethod(ClassNode classNode, String method,
 				String signature, String value, boolean publicStatic);
 
-		public void insertMethodWithException(ClassNode classNode,
-				String method, String signature, String message,
-				boolean publicStatic) {
 
-			MethodVisitor mv = classNode.visitMethod(Opcodes.ACC_PUBLIC
-					+ (publicStatic ? Opcodes.ACC_STATIC : 0), method,
-					"()Ljava/lang/Integer;", signature, null);
-
-			mv.visitCode();
-			Label l0 = new Label();
-			mv.visitLabel(l0);
-			mv.visitLineNumber(53, l0);
-			mv.visitTypeInsn(Opcodes.NEW, "java/lang/RuntimeException");
-			mv.visitInsn(Opcodes.DUP);
-			mv.visitLdcInsn(message);
-			mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
-					"java/lang/RuntimeException", "<init>",
-					"(Ljava/lang/String;)V");
-			mv.visitInsn(Opcodes.ATHROW);
-			Label l1 = new Label();
-			mv.visitLabel(l1);
-			mv.visitLocalVariable("this", "L" + classNode + ";", null, l0, l1,
-					0);
-			mv.visitMaxs(3, 1);
-			mv.visitEnd();
-
-		}
 	}
 
-	class IntegerParameterGenerator extends ParameterMethodGenerator {
+	class IntegerParameterGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -305,7 +308,7 @@ public class StoryParameterProcessor {
 			mv.visitInsn(Opcodes.ARETURN);
 			Label l1 = new Label();
 			mv.visitLabel(l1);
-			mv.visitLocalVariable("this", "L" + classNode + ";", null, l0, l1,
+			mv.visitLocalVariable("this", "L" + classNode.name + ";", null, l0, l1,
 					0);
 			mv.visitMaxs(3, 1);
 			mv.visitEnd();
@@ -313,7 +316,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class DoubleParameterGenerator extends ParameterMethodGenerator {
+	class DoubleParameterGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -339,7 +342,7 @@ public class StoryParameterProcessor {
 			mv.visitInsn(Opcodes.ARETURN);
 			Label l1 = new Label();
 			mv.visitLabel(l1);
-			mv.visitLocalVariable("this", "L" + classNode + ";", null, l0, l1,
+			mv.visitLocalVariable("this", "L" + classNode.name + ";", null, l0, l1,
 					0);
 			mv.visitMaxs(3, 1);
 			mv.visitEnd();
@@ -347,7 +350,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class IntegerTypeMethodGenerator extends ParameterMethodGenerator {
+	class IntegerTypeMethodGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -387,7 +390,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class DoubleTypeMethodGenerator extends ParameterMethodGenerator {
+	class DoubleTypeMethodGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -415,9 +418,9 @@ public class StoryParameterProcessor {
 			mv.visitInsn(Opcodes.DRETURN);
 			Label l1 = new Label();
 			mv.visitLabel(l1);
-			mv.visitLocalVariable("this",
-					"Lorg/bom/jbehaveasmunit/test/StoryParameterExampleTest;",
-					null, l0, l1, 0);
+			mv.visitLocalVariable("this", "L" + classNode.name + ";", null, l0,
+					l1, 0);
+				
 			mv.visitMaxs(3, 1);
 			mv.visitEnd();
 
@@ -425,7 +428,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class BooleanParameterGenerator extends ParameterMethodGenerator {
+	class BooleanParameterGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -463,7 +466,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class BooleanTypeMethodGenerator extends ParameterMethodGenerator {
+	class BooleanTypeMethodGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -499,7 +502,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class StringMethodGenerator extends ParameterMethodGenerator {
+	class StringMethodGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -533,7 +536,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class ExampleTableMethodGenerator extends ParameterMethodGenerator {
+	class ExampleTableMethodGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -570,7 +573,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class JSONMethodListGenerator extends ParameterMethodGenerator {
+	class JSONMethodListGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
@@ -651,7 +654,7 @@ public class StoryParameterProcessor {
 
 	}
 
-	class JSONMethodGenerator extends ParameterMethodGenerator {
+	class JSONMethodGenerator implements ParameterMethodGenerator {
 
 		@Override
 		public void register(HashMap<String, ParameterMethodGenerator> list) {
