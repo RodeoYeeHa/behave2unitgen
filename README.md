@@ -378,11 +378,11 @@ Now, you should have two scenarios in your story. We simply run the test again w
 
 Lets have a look at the JUnit-reports:
 
-![JUnit Reports](cseverin.github.com/repository/behave2unitgen/images/contactDelete_analyse2.jpg)
+![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse4.jpg)
 
 behave2unitgen automatically generates one test of every scenario! You can also see this when you have a look at the generated classes:
 
-![JUnit Reports](cseverin.github.com/repository/behave2unitgen/images/contactDelete_gen2.jpg)
+![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_gen2.jpg)
 
 In this way, you are able to extend your Testcases without changing the code of the Unittests! The reason for this is the separation between Model and Implementation.
  
