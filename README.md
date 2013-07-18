@@ -150,7 +150,7 @@ The @DatabaseSetup-Annotation uses a value prefixed with "method:", which means,
 Keep this in mind for we need this information later to feed DBUnit with the Testdata of your BDD-Stories.
 
 
-Example 1: Usecase "Delete a Contact" from an addressbook
+Usecase "Delete a Contact" from an addressbook
 =========================================================
 
 Writing the Story
@@ -278,6 +278,9 @@ The test succeeds as we can see in the JUnit Reports:
 Have a look at the class names: behave2unitgen generated a new class named "ContactDeleteStoryTest_1.class". You can also see this when you watch the class files in the build folder:
 
 ![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_gen1.jpg)
+
+In this generated class all the work is done for you: all parameters are included. You are also able to fade certain methods out. This depends on wether the values of your @Given-, @When- and @Then-Annotation match or not.
+
 
 Implementing the @When
 ----------------------
