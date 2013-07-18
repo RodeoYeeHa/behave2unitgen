@@ -73,10 +73,13 @@ The sample project uses gradle as the prefered build system. To be able to downl
 
 Then you have to include the dependencies:
 
+    compile "org.springframework:spring-test:3.1.2.RELEASE"
+    compile group: 'org.springframework', name: 'spring-beans', version: '3.1.2.RELEASE'
+    
     testCompile 'org.ow2.asm:asm-all:4.1'
-    		compile ('org.bom.behave2unitgen:behave2unitgen:1.0.0-SNAPSHOT'){
-    			changing = true
-    		}
+    compile ('org.bom.behave2unitgen:behave2unitgen:1.0.0-SNAPSHOT'){
+        changing = true
+    }
 You might need further dependencies. Please have a look at the complete gradle-script of the examples-project:
 
 https://raw.github.com/cseverin/behave2unitgen/master/behave2unitgenExample/build.gradle
