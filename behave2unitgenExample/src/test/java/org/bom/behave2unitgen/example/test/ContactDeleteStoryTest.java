@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bom.behave2unitgen.example.service.ContactDataService;
 import org.bom.jbehaveasmunit.annotations.Story;
 import org.bom.jbehaveasmunit.annotations.StoryParameter;
+import org.bom.jbehaveasmunit.beans.JSONObject;
 import org.bom.jbehaveasmunit.util.ExampleTable2DataSetUtil;
 import org.bom.jbehaveasmunit.util.ExampleTable2DataSetUtil.ColumnMapper;
 import org.bom.springtestdbunitext.DataSet;
@@ -31,14 +32,13 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+
 /**
  * Simple Testcase to Delete a Contact
  * 
  * @author Carsten Severin
- *
+ * 
  */
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:application-context.xml" })
 @DbUnitConfiguration(dataSetLoader = TypedDataSetLoader.class)
@@ -61,41 +61,47 @@ public class ContactDeleteStoryTest {
 	}
 
 	@Test
-	@When(value = "When Contact with Lastname $lastname is deleted by Owner $owner")
+	@When(value = "When Contact $toBeDeleted is deleted")
 	public void whenAContactIsDeleted() {
-		service.deleteContactByLastnameAndOwner(getLastname(), getOwner());
+		service.deleteContactByLastnameAndOwner(toBeDeleted().getObject()
+				.getLastname(), toBeDeleted().getObject().getOwner());
 	}
 
-	@Test
-	@Then(value = "Then the Contacts are:$contactsAfter")
-	@ExpectedDatabase(assertionMode=DatabaseAssertionMode.NON_STRICT, value="method:getResultData")
-	public void thenTwoContacts() {
-		// Nothing to do here
+	@StoryParameter(name = "toBeDeleted")
+	public JSONObject<ContactTestBean> toBeDeleted() {
+		// return null because method will be implemented by behave2unitgen
+		return null;
 	}
-	
+
 	@StoryParameter(name = "contactsAfter")
 	public static ExamplesTable getContactsAfter() {
 		// return null because method will be implemented by behave2unitgen
 		return null;
 	}
-	
+
 	public static DataSet getResultData() {
 		return ExampleTable2DataSetUtil.createDataSet(getContactsAfter(),
 				"CONTACT", createColumnMapper());
 	}
-	
-	
-	@StoryParameter(name="lastname")
-	public String getLastname() {
-		// return null because method will be implemented by behave2unitgen
-		return null;
+
+	@Test
+	@Then(value = "Then the Contacts are:$contactsAfter")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "method:getResultData")
+	public void thenTwoContacts() {
+		// Nothing to do here
 	}
 
-	@StoryParameter(name="owner")
-	public String getOwner() {
-		// return null because method will be implemented by behave2unitgen
-		return null;
-	}
+	// @StoryParameter(name="lastname")
+	// public String getLastname() {
+	// // return null because method will be implemented by behave2unitgen
+	// return null;
+	// }
+	//
+	// @StoryParameter(name="owner")
+	// public String getOwner() {
+	// // return null because method will be implemented by behave2unitgen
+	// return null;
+	// }
 
 	public static HashMap<String, String> createColumnMapper() {
 		return new ColumnMapper().addColumn("firstname", "FIRST_NAME")

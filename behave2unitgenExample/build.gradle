@@ -39,6 +39,10 @@
 	
 		testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.+'
 		testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.+'
+
+		testCompile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
+		testCompile 'org.ow2.asm:asm-all:4.1'
+
 		runtime 'org.codehaus.groovy:groovy-all:2.1.+'
 		
 		
@@ -47,12 +51,13 @@
 		compile "org.springframework:spring-test:${spring_version}"
 		compile group: 'org.springframework', name: 'spring-beans', version: '3.1.2.RELEASE'
 		
-		compile 'org.apache.ant:ant:1.9.1'
+		//compile 'org.apache.ant:ant:1.9.1'
 		
 		compile 'org.dbunit:dbunit:2.4.8'
 		compile 'org.jbehave:jbehave-core:4.0-beta-3'
-		compile 'org.ow2.asm:asm-all:4.1'
-		compile 'cglib:cglib-nodep:2.2'
+		
+		
+		//compile 'cglib:cglib-nodep:2.2'
 		
 		compile 'com.github.springtestdbunit:spring-test-dbunit:1.0.0'
 		compile ('org.bom.springtestdbunitext:spring-test-dbunit-ext:1.0.0-SNAPSHOT'){
@@ -63,27 +68,10 @@
 			changing = true
 		}
 		
-		ant_behaveOnPUT 'org.ow2.asm:asm-all:4.1'
-		ant_behaveOnPUT "org.springframework:spring-core:${spring_version}"
+		//ant_behaveOnPUT 'org.ow2.asm:asm-all:4.1'
+		//ant_behaveOnPUT "org.springframework:spring-core:${spring_version}"
 	
 	}
-	
-	/*
-	task compileBehaveOnPUT (dependsOn: sourceSets.test.runtimeClasspath){
-		ant.taskdef(name: 'cBehaveOnPUT',
-			classname: 'org.bom.jbehaveasmunit.ant.BehaveOnPureUnitTestingTask',
-			classpath:   sourceSets.test.runtimeClasspath.asPath){
-			classpath {
-				fileset(dir: 'build/libs', includes: '*.jar')
-			}
-			classpath {
-				configurations.ant_behaveOnPUT.asPath
-			}
-		}
-		ant.cBehaveOnPUT(buildPathTestClasses:"build/classes/test/")
-		
-	}
-	*/
 	
 	
 	test {

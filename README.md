@@ -150,8 +150,11 @@ The @DatabaseSetup-Annotation uses a value prefixed with "method:", which means,
 Keep this in mind for we need this information later to feed DBUnit with the Testdata of your BDD-Stories.
 
 
-Write a Story (Example 1: Delete a Contact)
-===========================================
+Example 1: Usecase "Delete a Contact" from an addressbook
+=========================================================
+
+Writing the Story
+-----------------
 
 Now we remember the requirement from before:
 
@@ -186,6 +189,9 @@ In our project, we store the following Story in a file named "contactDelete.stor
 
 After you get used to the syntax you will find it very easy to write a story yourself. Pay attention to the Testdata: it is already included in the story and you will see, that JBehave will provide you that data in your Unit-Test!
 
+Writing the sceleton of a Unit-Test
+-----------------------------------
+
 Next, we will write a simple Unit-Tests for this Story:
 
     @RunWith(SpringJUnit4ClassRunner.class)
@@ -211,6 +217,9 @@ Another thing you might have noticed is the @FixMethodOrder-Annotation. Usually,
 Our Scenario constists of tree steps: "Given" (the pre-condition), "When" (the condition) and "Then". It can be very useful to split these three steps into separate test-methods. If we do this, we need to make shure, that the methods are called in the right order (e.g. "Given" before or with "When").
 
 Normally, it is not a good idea to make test-method dependant of each another. In this case, it helps us to implement the three steps separately within the Unit-Test. Therefore, we use the @FixMethodOrder-Annotation.
+
+Implementing the @Given
+-----------------------
 
 Now we implement the first test-method:
 
@@ -258,7 +267,10 @@ Now we extend this a bit to use DBUnit to store the data for us:
 
 Now, we use DBUnit to read the Testdata out of the method "getInitData". This method reads the test data out of "getContactsBefore", which returns the testdata of the story.
 
-Thats it! Step one is ready. After implementing "@Given", we should implement the next step "@When":
+Implementing the @When
+----------------------
+
+Step one is ready. After implementing "@Given", we should implement the next step "@When":
 
     	@Test
     	@When(value = "When Contact with Lastname $lastname is deleted by Owner $owner")
@@ -281,6 +293,9 @@ Thats it! Step one is ready. After implementing "@Given", we should implement th
 Again, the parameter "owner" and "lastname" will be read out of the story. behave2unitgen will provide the data over the methods "getOwner" and "getLastname".  
 
 The method "whenAContactIsDeleted" is Annotated with @Test and contains the code to delete a Contact.
+
+Implementing the @Then
+----------------------
 
 The last step is to implement @Then:
 
@@ -306,13 +321,70 @@ Again, we use the method "getContactsAfter" to get the ExampleTable of the @Then
 
 That's it! Now, all three steps are implemented: @Given, @When and @Then.
 
-What we habe learned:
-- JBehave helps to separate Testdata and Unittest-implementation: the tests are implemented in a pure JUnit-Test whereas the Testdata is provided by the story.
-- Together with DBUnit, there are only very few things to implement
-- When you have a Story file in your Project and no implementation, behave2unitgen will generate an Assert failure for this. Thus, you can always be informed about the state of your project.
+Use JSON as data format
+-----------------------
 
+Let's have a look back to the @When. There, we have two separate parameters. Therefore, we provived two separate getter-methods "getLastname()" and "getOwner()". Wouldn't it be nice to have both values in one objects?
 
-...
+One way to have this is to use JSON as data format! To use this, you must not forget to include the following dependancy into your gradle-script:
+
+    testCompile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
+
+Now we can change the step "When" in our story and use a JSON-String instead of two separate parameters:
+
+    ...
+    When Contact {"lastname":"Severin", "owner":"umeier"} is deleted
+    ...
+
+Now we can delete the methods getOwner() and getLastname() and replace them with a method toBeDeleted():
+
+    	@Test
+    	@When(value = "When Contact $toBeDeleted is deleted")
+    	public void whenAContactIsDeleted() {
+    		service.deleteContactByLastnameAndOwner(toBeDeleted().getObject()
+    				.getLastname(), toBeDeleted().getObject().getOwner());
+    	}
+    
+    	@StoryParameter(name = "toBeDeleted")
+    	public JSONObject<ContactTestBean> toBeDeleted() {
+    		// return null because method will be implemented by behave2unitgen
+    		return null;
+    	}
+
+As you can see, we had to change the value of the @When-Annotation as well. The JSON-String is transformed into in instance of ContactTestBean, which is a simple POJO. Of cause you can also use JSON for Lists the same way (see the examples).
+
+Extend the story
+----------------
+
+After some time, you might find a bug that you want to write a test for before the programmer fixes the bug. For example, when the user tries to delete a Contact, that does not exist, a NullPointer-Exception is thrown.
+
+To test this, you only have to extend the story. Add this at the end of your story:
+
+    Scenario: "Delete by Lastname" when no such contact exists for the user
+    
+    Given the Contacts: 
+    |lastname|firstname|owner|
+    |Severin|Carsten|hschmidt|
+
+    When Contact {"lastname":"Severin", "owner":"umeier"} is deleted
+    
+    Then the Contacts are:
+    |lastname|firstname|owner|
+    |Severin|Carsten|hschmidt|
+
+Now, you should have two scenarios in your story. We simply run the test again without changing our Unittest:
+
+    gradle --daemon test
+
+Lets have a look at the JUnit-reports:
+
+![JUnit Reports](cseverin.github.com/repository/behave2unitgen/images/contactDelete_analyse2.jpg)
+
+behave2unitgen automatically generates one test of every scenario! You can also see this when you have a look at the generated classes:
+
+![JUnit Reports](cseverin.github.com/repository/behave2unitgen/images/contactDelete_gen2.jpg)
+
+In this way, you are able to extend your Testcases without changing the code of the Unittests! The reason for this is the separation between Model and Implementation.
  
 
 

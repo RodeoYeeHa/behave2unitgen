@@ -11,6 +11,8 @@ public class ContactTestBean {
 	String firstname;
 	
 	String lastname;
+	
+	String owner;
 
 	public String getFirstname() {
 		return firstname;
@@ -26,6 +28,14 @@ public class ContactTestBean {
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 	
 	

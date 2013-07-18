@@ -10,9 +10,22 @@ Given the Contacts:
 |Schmidt|Pina|umeier|
 |Severin|Carsten|hschmidt|
 
-When Contact with Lastname Severin is deleted by Owner umeier
+When Contact {"lastname":"Severin", "owner":"umeier"} is deleted
 
 Then the Contacts are:
 |lastname|firstname|owner|
 |Schmidt|Pina|umeier|
+|Severin|Carsten|hschmidt|
+
+
+Scenario: "Delete by Lastname" when no such contact exists for the user
+
+Given the Contacts: 
+|lastname|firstname|owner|
+|Severin|Carsten|hschmidt|
+
+When Contact {"lastname":"Severin", "owner":"umeier"} is deleted
+
+Then the Contacts are:
+|lastname|firstname|owner|
 |Severin|Carsten|hschmidt|
