@@ -390,6 +390,7 @@ Extend the story
 After some time, you might find a bug that you want to write a test for before the programmer fixes the bug. For example, when the user tries to delete a Contact, that does not exist, a NullPointer-Exception is thrown.
 
 To test this, you only have to extend the story. Add this at the end of your story:
+    ...
 
     Scenario: "Delete by Lastname" when no such contact exists for the user
     
