@@ -94,6 +94,16 @@ In order to run the generation automatically before the test-task, you have to a
     	}
 	
 
+Valid parameters are:
+
+| Parameter                | Default Value       |
+| ------------------------ |:-------------------:|
+| searchPatternTestClasses | **/*StoryTest.class |
+| outDir                   | build/classes/test/ |
+| parseUnusedStories       | false               | 
+
+
+
 Use DBUnit
 ==========
 Most of our web applications rely on database queries that can only be testet completely with Integration Tests. 
