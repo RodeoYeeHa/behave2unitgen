@@ -48,7 +48,7 @@ In most projects i have seen, there are 3 different types of tests:
 - Integration Tests
 - Acceptance Tests
 
-Unit Tests and Integration Tests are usually written by the developer hinself. They are often far too technical and too detailed for a business specification. On the other hand, the Acceptance Tests are often executed manually in order to test the business specification. From the point of view of a developer, they are often not precise and detailed enough.
+Unit Tests and Integration Tests are usually written by the developer himself. They are often far too technical and too detailed for a business specification. On the other hand, the Acceptance Tests are often executed manually in order to test the business specification. From the point of view of a developer, they are often not detailed an precise enough.
 
 The idea of BDD is the following:
 - Make the specification better by adding examples to it
