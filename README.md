@@ -1,9 +1,7 @@
 behave2unitgen
 ==============
 
-ATTENTION!!! THIS DESCRIPTION IS STILL IN PROGRESS!!!
-
-Behave2UnitGen generated executable JUnit-Testcases from a set of given Story-files. It uses ASM to generate the Testcases.
+Behave2UnitGen generates executable JUnit test cases from a set of given story files. It uses ASM to generate the test cases.
 
 The project depends on JBehave:
 http://jbehave.org
@@ -11,43 +9,45 @@ http://jbehave.org
 It also depends on JUnit:
 https://github.com/junit-team/junit
 
-The Examples also depend on Unit testing with Spring and DBUnit:
+The examples also depend on Unit testing with Spring and DBUnit:
 https://github.com/springtestdbunit/spring-test-dbunit
 
-When you want to inject Testdata from the Stories via JSON, you also need the Jackson-Library.
+If you would like to inject test data from the stories via JSON, you also need the Jackson-Library.
 
 Introduction
 ============
 
-JBevave is exellent for interating Behavior Driven Development into your projects. With the standard implementation, I had the following "problems":
-- I was not able to use Spring Test Framework and DBUnit the way I wanted to. E.g. I had to use special Annotations for the Spring integration
-- For a simple one-story-per-Testcase, I don't need to separate the Steps into their own class
+JBehave is excellent for using Behavior Driven Development in your projects. 
+However, I had the following difficulties with its standard implematation:
+- I was not able to use Spring Test Framework and DBUnit the way I wanted to. E.g. I had to use special annotations to integrate Spring 
+- For a simple one-story-per-test case, I don't need to separate the steps into their own classes
 
 Behavior Driven Development (BDD)
 =================================
 
-I first heard about BDD when I started reading the book "Specification by Example". I was confused at first when they used the term "executable specification". How can one execute a specification?
+First time I heard about BDD when I started reading the book "Specification by Example". In the first instance I was confused about the term "executable specification". How can one execute a specification?
 
-In most projects i have seen, there are 3 different types of tests:
+So far I was aware of three different types of tests:
 - Unit Tests
 - Integration Tests
 - Acceptance Tests
 
-Unit Tests and Integration Tests are usually written by the developer himself. They are often far too technical and too detailed for a business specification. On the other hand, the Acceptance Tests are often executed manually in order to test the business specification. From the point of view of a developer, they are often not detailed an precise enough.
+As Unit Test and Integration Tests are usually designed by the developer himselfthey run the risk of being far too technical and detailed for a business specification.
+Acceptance Tests have the disadvantage to be executed manually in order to test the business specification. From the developer's point of view they are often not detailed and precise enough.
 
 The idea of BDD is the following:
-- Make the specification better by adding examples to it
-- Make the requirements executable by using the examples for Integration Tests
-- Track your Project status any time (how much of our Project is implemented so far?)
-- Make your specification testable automated 
+- Improve the quality of specifications by adding examples to it
+- Guarantee the execution of requirements by using the examples for Integration Tests
+- Track your project status any time
+- Make your specification testable  
 
 
-Once you have implemented the Unit Tests for your requirements, you can test then any time.
+Once you have implemented the Unit Tests for your requirements, you can test any time.
 
 How to use behave2unitgen
 =========================
 
-The sample project uses gradle as the prefered build system. To be able to download behave2unitgen, you must extend your maven repositories:
+The sample project uses gradle as the prefered build system. To download behave2unitgen you need to extend your maven repositories:
 
     	repositories {
     		mavenCentral()
@@ -65,14 +65,15 @@ Then you have to include the dependencies:
 
     testCompile "org.ow2.asm:asm-all:4.1"
 
+
     compile ("org.bom.behave2unitgen:behave2unitgen:1.0.0-SNAPSHOT"){
         changing = true
     }
-You might need further dependencies. Please have a look at the complete gradle-script of the examples-project:
+You might need further dependencies. Please have a look at the complete gradle-script of the sample project:
 
 https://raw.github.com/cseverin/behave2unitgen/master/behave2unitgenExample/build.gradle
 
-When you have not installed gradle, you can use the gradle-wrapper simply by calling 
+In case you have not installed gradle, you could use the gradle-wrapper simply by calling 
 
     gradlew --daemon test
 
@@ -80,7 +81,7 @@ instead of
 
     gradle --daemon test
 
-In order to run the generation automatically before the test-task, you have to add the following to your gradle-script as well:
+In order to run the generation automatically before the test-task you have to add the following to your gradle-script as well:
 
     	test {
     		dependsOn "behave2unitgen"
@@ -106,18 +107,18 @@ Valid parameters are:
 
 Use DBUnit
 ==========
-Most of our web applications rely on database queries that can only be testet completely with Integration Tests. 
+Most of the web applications rely on database queries that can only be testet completely with Integration Tests. 
 
-DBUnit is extremely useful for Integration Tests for it provides you some features to prepare the database before your tests start and even to compare the data after the test have run with the expected values automatically.
+DBUnit is extremely useful for Integration Tests. It provides you several features to prepare the database before your test start. And you are able to compare the data after the test have run with the expected values automatically.
 
-There is a library called "spring-test-dbunit" that integrates the Spring Test Framework will DBUnit. 
+There is a library called "spring-test-dbunit" that integrates the Spring test framework with DBUnit. 
 
-Lets assume, we want to implement an adressbook application. The requirement we want to test is: 
+Let us assume that we would like to implement an adress book application. The requirement we want to test is: 
 
     The system must allow the user to delete any of his contacts. 
     The user is not allowed to delete contacts of other owners. 
 
-This example shows how difficult it is to describe a relatively simple requirement. Let's write a DBUnit-Test for this. In this example, there are two contacts with the same names stored for different owners. One ower should only be able to delete his or her database entry: 
+This example shows how difficult it is to describe a relatively simple requirement. Let's write a DBUnit-Test for this. In this example there are two contacts with the same names stored for different owners. One owner should only be able to delete his or her database entry: 
 
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(locations = { "classpath:application-context.xml" })
@@ -139,7 +140,7 @@ This example shows how difficult it is to describe a relatively simple requireme
     	
     } 
 
-This example is completely written without BDD. With DBUnit i can simply define XML-Data for the @DatabaseSetup:
+This example is completely written without BDD. With DBUnit I can simply define XML-Data for the @DatabaseSetup:
 
     <?xml version="1.0" encoding="UTF-8"?>
     <dataset>
@@ -148,7 +149,7 @@ This example is completely written without BDD. With DBUnit i can simply define 
       <CONTACT FIRST_NAME="Carsten" LAST_NAME="Severin" OWNER="hschmidt"/>
     </dataset>
 
-And i define, how the Data should look like after i deleted 'Severin' for owner 'umeier':
+I specify how the data should be like after I deleted 'Severin' for owner 'umeier':
 
     <?xml version="1.0" encoding="UTF-8"?>
     <dataset>
@@ -156,9 +157,9 @@ And i define, how the Data should look like after i deleted 'Severin' for owner 
       <CONTACT FIRST_NAME="Carsten" LAST_NAME="Severin" OWNER="hschmidt"/>
     </dataset>
 
-Very simple so far! Spring-Test-Framework together with DBUnit make it very easy to write an Integration Test!
+Very simple so far! Spring test framework combined with DBUnit makes it very easy to write an Integration Test!
 
-If the Testdata is too small for a separate XML-File or if you want to geneate the Testdata, you can simply define the data within the test class in a static method. Therefore, you have to extend the class level Annotations a bit:
+If the test data is too small for a separate XML file or if you would like to geneate the test data you can simply define the data within the test class in a static method. Therefore, you have to extend the class level annotations:
 
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(locations = { "classpath:application-context.xml" })
@@ -170,7 +171,7 @@ If the Testdata is too small for a separate XML-File or if you want to geneate t
     public class ContactDeleteTest { 
     ...
 
-The @DBUnitConfiguration-Annotation is imporant to notice. Here you define a special DataSetLoader, that enables you to reference methods instead of XML-Files. Here is how you use it:
+Please also notice @DBUnitConfiguration annotation! Here you define a special DataSetLoader that enables you to reference methods instead of XML-Files. How you use it:
 
     	@Test
     	@DatabaseSetup(type=DatabaseOperation.CLEAN_INSERT, value="method:setup")
@@ -187,15 +188,15 @@ The @DBUnitConfiguration-Annotation is imporant to notice. Here you define a spe
     		return ds;
     	}
 
-The @DatabaseSetup-Annotation uses a value prefixed with "method:", which means, it should read the test data out of the method setup().
+The @DatabaseSetup-Annotation uses a value prefixed with "method:". That means, it has to read the test data out of the method setup().
 
-Keep this in mind for later. With this, we can simply pass test data from our stories to DBUnit!
+Keep this in mind! With this method we can simply pass test data from our stories to DBUnit!
 
 
 Usecase "Delete a Contact"
 ==========================
 
-"The Adressbook-App should allow the use to delete one of his stored Contacts"
+"The adress-book-app should allow the user to delete one of his or her stored contacts"
 
 Writing the Story
 -----------------
@@ -207,7 +208,7 @@ Just to remember, here is our requirement again:
 
 This kind of requirement is extremely hard to read for customers. It is also not very precise and thus hard to implement for the programmer.
 
-An example would help the customer to better understand the requirement. The example can also be used by the programmer to test if the implementation matches the requirement. BDD helps us with that.
+An example would help the customer to conceive the requirement. The example can also be used by the programmer to test if the implementation matches the requirement. BDD helps us with that.
 
 In our project (within the classpath), we put the following story in a file named "contactDelete.story":
 
@@ -216,7 +217,7 @@ In our project (within the classpath), we put the following story in a file name
     The user is not allowed to delete contacts of other owners.
 
     Scenario: 
-    "Delete by Lastname" only deletes contacts of the current user itself
+    "Delete by lastname" only deletes contacts of the current user itself.
 
     Given the Contacts: 
     |lastname|firstname|owner|
@@ -224,19 +225,19 @@ In our project (within the classpath), we put the following story in a file name
     |Schmidt|Pina|umeier|
     |Severin|Carsten|hschmidt|
 
-    When Contact with Lastname Severin is deleted by Owner umeier
+    When contact with lastname "Severin" is deleted by owner "umeier"
 
-    Then the Contacts are:
+    then the contacts are:
     |lastname|firstname|owner|
     |Schmidt|Pina|umeier|
     |Severin|Carsten|hschmidt|
 
-After you get used to the syntax you will find it very easy to write a story yourself. Pay attention to the test data: it is already included in the story and as you will see, JBehave will provide you that data in your Unit Test!
+As soon as you get used to the syntax you will find it very easy to write a story yourself. Pay attention to the test data: it is already included in the story and you will see: JBehave will provide you that data in your Unit Test!
 
-Writing the sceleton of a Unit Test
+Writing the skeleton of a Unit Test
 -----------------------------------
 
-Next, we will write a simple Unit Tests for this story:
+Next we will write a simple Unit Tests for this story:
 
     @RunWith(SpringJUnit4ClassRunner.class)
     @ContextConfiguration(locations = { "classpath:application-context.xml" })
@@ -254,13 +255,13 @@ Next, we will write a simple Unit Tests for this story:
     		
     }
 
-This Unit Test will fail because there is no test method so far. As you can see, i extended the code with the  Annotations @Story. I use this Annotation to reference the story i want to write a Unit Test for.
+This Unit Test will fail because there is no test method so far. As you can see I extended the code with the annotation @Story. I use this annotation to refer to the story I write a Unit Test for.
 
-Another thing you might have noticed is the @FixMethodOrder-Annotation. Usually, all Unit Tests should be independant of each another, so the order in which the methods are called are not predictable in JUnit 4 by default.
+You also might have noticed the annotation @FixMethodOrder. Usually, all Unit Tests should be independant of one another, so the order in which the methods are called are not predictable in JUnit 4 by default.
 
-In out story a scenario constists of tree steps: "Given..." (the pre-condition), "When..." (the condition) and "Then...". It can be very useful to split these three steps into separate test methods. If we do this, we need to make shure, that the methods are called in the right order (e.g. the @Given-Annotated method should be called before or together with the @When-Annotated one).
+In our story a scenario consists of tree steps: "Given..." (the pre-condition), "When..." (the condition) and "Then...". It can be very useful to split these three steps into separate test methods. If we do so, we need to make sure, that the methods are called in the right order (e.g. the @Given-Annotated method should be called before or together with the @When-Annotated one).
 
-Normally, it is not a good idea to make test method dependent of each another. In this special case, it helps us to implement the three steps separately within the Unit Test. Therefore, we use the @FixMethodOrder-Annotation.
+Normally, it is not a good idea to make test method dependent of each other. In this special case, it helps us to implement the three steps separately within the Unit Test. Therefore we use the @FixMethodOrder-annotation.
 
 Implementing the @Given
 -----------------------
@@ -279,11 +280,11 @@ Now we implement the first test-method:
     		return null;
     	}
 
-With these two methods, we map the "Given..." part of our storys scenario with the right methods in our Unit Test. We tell behave2unitgen to store the Datatable of the story into a parameter called $contactBefore. 
+With these two methods we map the "Given..." part of our story's scenario with the right methods in our Unit Test. We tell behave2unitgen to store the Datatable of the story into a parameter called $contactBefore. 
 
-In JBehave, the parameter would be directly passed into the test-method as a parameter. Here we use a separate method and mark it with the @StoryParameter-Annotation. This method will be implemented by behave2unitgen later, so we only have to return null.
+In JBehave the parameter would be passed directly into the test-method as a parameter. Here we use a separate method and mark it with the @StoryParameter-Annotation. This method will be implemented by behave2unitgen later, so we only have to return null.
 
-Now we extend this a bit to use DBUnit to store the data for us:
+Now we extend this to use DBUnit to store the data for us:
 
     	@Test
     	@Given(value = "Given the Contacts:$contactsBefore")
@@ -311,7 +312,7 @@ Now we extend this a bit to use DBUnit to store the data for us:
 
 This time we use DBUnit to read the test data from the method getInitData(). The method itself reads the test data from getContactsBefore(), which is implemented by behave2unitgen and returns the test data of the story.
 
-Lets start the test with gradle:
+Let's start the test with gradle:
 
     gradle --daemon test
 
@@ -319,17 +320,17 @@ The test succeeds as we can see in the JUnit Reports:
 
 ![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse1.jpg)
 
-Have a look at the testclasses: behave2unitgen generated a new class named "ContactDeleteStoryTest_1.class". You can also see this when you watch the class files in the build folder:
+Have a look at the test classes: behave2unitgen generates a new class named "ContactDeleteStoryTest_1.class". You can also see this when you watch the class files in the build folder:
 
 ![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_gen1.jpg)
 
-In this generated class all the work is done for you: all parameters are included. You are also able to fade certain methods out. This depends on wether the values of your @Given-, @When- and @Then-Annotation match or not.
+In this generated class all the work is done for you: all parameters are included. You are also able to fade out certain methods. It depends on whether the values of your @Given-, @When- and @Then-Annotation match or not.
 
 
 Implementing the @When
 ----------------------
 
-After implementing "@Given", we should implement the next step "@When":
+After implementing "@Given" we implement the next step "@When":
 
     	@Test
     	@When(value = "When Contact with Lastname $lastname is deleted by Owner $owner")
@@ -351,20 +352,20 @@ After implementing "@Given", we should implement the next step "@When":
  
 The parameter $owner and $lastname will be read out of the story. behave2unitgen will provide the data by the annotated methods getOwner() and getLastname().  
 
-The method whenAContactIsDeleted() is Annotated with @Test and contains the code to delete a Contact.
+The method whenAContactIsDeleted() is annotated with @Test and contains the code to delete a contact.
 
-Lets run gradle again to start the tests:
+Let's run gradle again to start the tests:
 
     gradle --daemon test
 
-As expected, the tests succeeds as well. Again, we have a look at the JUnit Reports:
+As expected the tests succeeds as well. Again we have a look at the JUnit Reports:
 
 ![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse2.jpg)
 
 Implementing the @Then
 ----------------------
 
-At last we have to check the result. To do this, we implement the last of the three steps @Then:
+At last we have to check the result. Therefore we implement the last of the three steps @Then:
 
     	@Test
     	@Then(value = "Then the Contacts are:$contactsAfter")
@@ -386,7 +387,7 @@ At last we have to check the result. To do this, we implement the last of the th
 
 We use the annotated method getContactsAfter() to get the ExampleTable out of the story. With the method getResultData() we feed DBUnit directly with this data and DBUnit compares the result data with the supposed data itself.
 
-That's it! Now, all three steps are implemented: @Given, @When and @Then.
+That's it! Now all three steps are implemented: @Given, @When and @Then.
 
 When we start the test again, we see in the JUnit-Reports that all three tests succeed:
 
@@ -399,19 +400,19 @@ Here is the JUnit-Report:
 Use JSON as data format
 -----------------------
 
-Let's have a look back at method that is annotated with @When. There, we read two separate parameters. Wouldn't it be nice to have both values in one objects?
+Let's have a look back at the  method that is annotated with @When. There we read two separate parameters. Wouldn't it be nice to have both values in one object?
 
-One way to have this is to use JSON as data format! To use this, you must not forget to include the following dependency into your gradle-script:
+Therefore you have to use JSON as data format! Pay attention: You must not forget to include the following dependency into your gradle-script:
 
     testCompile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
 
-Now we can change the step "When..." in the story and use a JSON-String instead of two separate parameters:
+We change the step "When..." in the story and use a JSON-string instead of two separate parameters:
 
     ...
     When Contact {"lastname":"Severin", "owner":"umeier"} is deleted
     ...
 
-After we have changed the story, we must also change the value of the @When-Annotation in order to make it still match. Both parameters "owner" and "lastname" are now delivered by the method toBeDeleted() at once:
+After we have changed the story we must also change the value of the @When-Annotation in order to make sure that they still match. Both parameters "owner" and "lastname" are now delivered by the method toBeDeleted() at once:
 
     	@Test
     	@When(value = "When Contact $toBeDeleted is deleted")
@@ -426,14 +427,14 @@ After we have changed the story, we must also change the value of the @When-Anno
     		return null;
     	}
 
-The JSON-String is automatically transformed into in instance of ContactTestBean, which is a simple POJO. Of cause you can also use JSON to parse a list of objects (see the examples).
+The JSON-string is automatically transformed into an instance of ContactTestBean, which is a simple POJO. Of course you can also use JSON to parse a list of objects (see the examples).
 
 Extend the story
 ----------------
 
-After some time, you might find a bug that you want to write a test for before the programmer fixes the bug. For example, when the user tries to delete a Contact, that does not exist, a NullPointerException is thrown.
+After a while you might find a bug that you would like to write a test for before the programmer fixes the bug. For example, when the user tries to delete a contact, that does not exist and a NullPointerException is thrown.
 
-To test this, you only have to extend the story. Add this at the end of your story:
+In this case you only have to extend the story. Add the following at the end of your story:
 
     Story: 
     The system must allow the user to delete any of his contacts.
@@ -470,15 +471,15 @@ We simply run the test again without changing our Unittest:
 
     gradle --daemon test
 
-Lets have a look at the JUnit-reports:
+Let's have a look at the JUnit-reports:
 
 ![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_analyse4.jpg)
 
-behave2unitgen automatically generates one test for each scenario! You can also see this when you have a look at the generated classes:
+behave2unitgen automatically generates one test for each scenario! To check it just have a look at the generated classes:
 
 ![JUnit Reports](https://raw.github.com/cseverin/behave2unitgen/master/images/contactDelete_gen2.jpg)
 
-In this way, you are able to extend your Unit Tests without changing the sourcecode of the test classes! As we can see it is always good to separate the model (=test data) from the implementation. 
+That is how you are able to extend your Unit Tests without changing the sourcecode of the test classes! As we can see it is always clever to separate the model (=test data) from the implementation. 
  
 
 
